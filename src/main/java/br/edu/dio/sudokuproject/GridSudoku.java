@@ -76,7 +76,7 @@ public class GridSudoku {
         initialCells.forEach( inputCell -> {
             Coordinate coord = inputCell.getCoordinate();
             Cell existingCell = gridCellsMap.get(coord);
-            existingCell.setValue(inputCell.getValue());
+            existingCell.setInitialValue(inputCell.getValue());
         });
 
         this.gameStatus = EnumGameStatus.NOT_INITIATED;
@@ -94,35 +94,39 @@ public class GridSudoku {
         Cell cell = gridCellsMap.get(coord);
         cell.setValue(value);
         filledCellCount++;
-        validateSudokuConsistency(row, col);
+        validateSudokuConsistency(row, col, false);
     }
 
 
     public void removeCellValue(Integer row, Integer col) throws Exception {
         Coordinate coord = new Coordinate(row, col);
         Cell cell = gridCellsMap.get(coord);
+        boolean isEmpty = !cell.getIsFilled();
+        if(isEmpty)
+            throw new Exception("Cell is already empty");
+
         if (cell.getIsInitiallyFilled()) {
-            throw new Exception("Célula originalmente preenchida não pode ser apagada");
+            throw new Exception("Initial values cannot be removed.");
         }
 
-        validateSudokuConsistency(row, col);
+        validateSudokuConsistency(row, col, true);
         cell.removeValue();
         this.filledCellCount--;
         this.gameStatus = EnumGameStatus.INCOMPLETE;
     }
 
-    private void validateSudokuConsistency(Integer rowIndex, Integer columnIndex) {
+    private void validateSudokuConsistency(Integer rowIndex, Integer columnIndex, boolean isRemoval) {
 
         Coordinate changedCoordinate = new Coordinate(rowIndex, columnIndex);
         Cell lastChangedCell = gridCellsMap.get(changedCoordinate);
 
-        Boolean consistentRow = checkRowConsistency(lastChangedCell);
-        Boolean consistentColumn = checkColumnConsistency(lastChangedCell);
-        Boolean consistentSubGrid = checkSubGridConsistency(lastChangedCell);
+        Boolean consistentRow = checkRowConsistency(lastChangedCell, isRemoval);
+        Boolean consistentColumn = checkColumnConsistency(lastChangedCell, isRemoval);
+        Boolean consistentSubGrid = checkSubGridConsistency(lastChangedCell, isRemoval);
         this.isGameConsistent =  (consistentRow && consistentColumn && consistentSubGrid);
     }
 
-    private Boolean checkRowConsistency(Cell lastChangedCell) {
+    private Boolean checkRowConsistency(Cell lastChangedCell, boolean isRemoval) {
         Boolean rowConsistent = true;
         Integer rowIndex = lastChangedCell.getCoordinate().getRow();
         Integer columnIndex = lastChangedCell.getCoordinate().getCol();
@@ -130,80 +134,95 @@ public class GridSudoku {
         List<Cell> row = this.gridCellsListForRowAndColumnChecking.get(rowIndex);
         List<Cell> repeatedCells = new ArrayList<>();
         repeatedCells.add(lastChangedCell);
+        boolean conflict = false;
 
         for (int cIndex = 0; cIndex < GRID_SIZE; cIndex++) {
             Cell existingCell = row.get(cIndex);
-            boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
+            boolean repeatedValue = false;
+            repeatedValue = existingCell.getValue() == lastChangedCell.getValue() && existingCell != lastChangedCell;
+            conflict = conflict || repeatedValue;
             if(repeatedValue){
+                lastChangedCell.setRowConsistent(false);
+                existingCell.setRowConsistent(false);
                 repeatedCells.add(existingCell);
             }
+
         }
-        if(repeatedCells.size() < 3){
-            //this means the changed value had one or less dupllicates in the same row
+        if(repeatedCells.size() < 3 && isRemoval){
+            //this means a value was removed and had one or less duplicates in the same row
             //therefore both cells will be consistent after the change
             repeatedCells.forEach(cell -> cell.setRowConsistent(true));
+            return rowConsistent;
         }
-        else{
-            // this means there was more than 1 previous value identical to the changed cell value,
-            // so changing this value won't resolve the other conflicts in this row
-            rowConsistent = false;
-        }
+
+        rowConsistent = !conflict;
+
 
         return rowConsistent;
     }
 
-    private Boolean checkColumnConsistency(Cell lastChangedCell) {
+    private Boolean checkColumnConsistency(Cell lastChangedCell, boolean isRemoval) {
         Boolean columnConsistent = true;
         List<Cell> repeatedCells = new ArrayList<>();
         repeatedCells.add(lastChangedCell);
+        boolean conflict = false;
 
         for (int rIndex = 0; rIndex < GRID_SIZE; rIndex++) {
             Coordinate currentCoordinate = new Coordinate(rIndex, lastChangedCell.getCoordinate().getCol());
             Cell existingCell = gridCellsMap.get(currentCoordinate);
-
-            boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
+            boolean repeatedValue = false;
+            repeatedValue = existingCell.getValue() == lastChangedCell.getValue() && existingCell != lastChangedCell;
+            conflict = conflict || repeatedValue;
             if(repeatedValue){
+                lastChangedCell.setColumnConsistent(false);
+                existingCell.setColumnConsistent(false);
                 repeatedCells.add(existingCell);
             }
         }
 
-        if(repeatedCells.size() < 3){
+        if(repeatedCells.size() < 3 && isRemoval){
             //this means the changed value had one or less dupllicates in the same column
             //therefore both cells will be consistent after the change
             repeatedCells.forEach(cell -> cell.setColumnConsistent(true));
+            return columnConsistent;
+
         }
-        else{
-            // this means there was more than 1 previous value identical to the changed cell value,
-            // so changing this value won't resolve the other conflicts in this column
-            columnConsistent = false;
-        }
+
+        columnConsistent = !conflict;
+
         return columnConsistent;
     }
 
-    private Boolean checkSubGridConsistency(Cell lastChangedCell) {
+    private Boolean checkSubGridConsistency(Cell lastChangedCell, boolean isRemoval) {
         Boolean subGridConsistent = true;
         Coordinate coordinateChanged = lastChangedCell.getCoordinate();
         SudokuSubGrid subGrid = subGridMap.get(coordinateChanged);
         List<Cell> repeatedCells = new ArrayList<>();
         repeatedCells.add(lastChangedCell);
+        boolean conflict = false;
 
         for (Cell existingCell : subGrid.getCells()) {
-            boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
+
+            boolean repeatedValue = false;
+
+            repeatedValue = existingCell.getValue() == lastChangedCell.getValue() && existingCell != lastChangedCell;
+            conflict = conflict || repeatedValue;
+
             if (repeatedValue){
+                lastChangedCell.setSubGridConsistent(false);
+                existingCell.setSubGridConsistent(false);
                 repeatedCells.add(existingCell);
             }
         }
-        if(repeatedCells.size() < 3){
+        if(repeatedCells.size() < 3 && isRemoval){
             //this means the changed value had one or less dupllicates in the same column
             //therefore both cells will be consistent after the change
             repeatedCells.forEach(cell -> cell.setColumnConsistent(true));
+            return subGridConsistent;
         }
-        else{
-            // this means there was more than 1 previous value identical to the changed cell value,
-            // so changing this value won't resolve the other conflicts in this column
-            subGridConsistent = false;
-            subGrid.setConsistent(subGridConsistent);
-        }
+        subGridConsistent = !conflict;
+        subGrid.setConsistent(subGridConsistent);
+
         return subGridConsistent;
     }
 
@@ -230,7 +249,7 @@ public class GridSudoku {
 
     public void showGame(){
         System.out.println(" _____  _____  _____  _____  _____  _____  _____  _____  _____ ");
-        for(int i = 1 ; i < 10 ; i++){
+        for(int i = 0 ; i < 9 ; i++){
             System.out.println("|     ||     ||     ||     ||     ||     ||     ||     ||     |");
             List<Cell> row = this.gridCellsListForRowAndColumnChecking.get(i);
             StringBuilder lineBuilder = new StringBuilder();
