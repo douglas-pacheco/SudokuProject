@@ -1,23 +1,21 @@
-Esse projeto tem o objetivo de atender um desafio proposto em um curso da DIO, conforme o enunciado abaixo.
-Tentei aplicar uma lógica significativamente diferente da demonstrada em aula para fins de prática e para propositalmente complexificar a solução demonstrando as diferentes estratégias e algoritmos no que diz respeito ao trade-off entre consumo de memória e de processamento
+This project aims to fulfill a challenge proposed in a DIO course, according to the statement below. I tried to apply a significantly different logic than what was demonstrated in class for practice purposes and to intentionally complexify the solution, showcasing different strategies and algorithms regarding the trade-off between memory consumption and processing.
 
-# Jogo de Sudoku
+Sudoku Game
+https://en.wikipedia.org/wiki/Sudoku
 
-https://pt.wikipedia.org/wiki/Sudoku
+Requirements
+You must have an interactive menu where we can choose from the following options:
 
-  ## Requisitos
-    Deve-se ter um menu interativo onde poderemos escolher entre as seguintes opções:
-        1. Iniciar um novo o jogo: Deve-se exibir na tela o jogo inicial, com os espaços preenchidos somente pelos números iniciais (usar os args do método main para informar os números iniciais e suas devidas posiçõers);
+Start a new game: The initial game board should be displayed on the screen, with spaces only filled by the initial numbers (use the main method's arguments to provide the initial numbers and their respective positions);
 
-        2. Colocar um novo número: Deve-se solicitar as seguintes informações do jogador (número a ser colocado, indice horizontal e indice vertical do número), não se deve permitir que seja colocado um número em uma posição que já esteja preenchida ( seja número fixo ou informado pelo jogador);
+Place a new number: The following information should be requested from the player (number to be placed, horizontal index, and vertical index of the number). It should not be allowed to place a number in a position that is already filled (whether it's a fixed number or one entered by the player);
 
-        3. Remover um número: deve-se solicitar os índices verticais e horizontais do número que deseja remover ( caso o número seja um número fixo do jogo deve-se exibir uma mensagem informado que o número não pode ser removido);
+Remove a number: The vertical and horizontal indices of the number to be removed should be requested (if the number is a fixed game number, a message should be displayed informing that the number cannot be removed);
 
-        4. Verificar jogo: Vizualizar a situação atual do jogo;
+View game: Visualize the current state of the game;
 
-        5. Verificar status do jogo: Deve-se verificar o status atual do jogo ( não iniciado, incompleto e completo) e se contém ou não erros ( o jogo está errado quando tem números em posições conflitantes) todos os status do jogo podem conter ou não erros, exceto o status não iniciado que é sempre sem erro;
-        6. Limpar: remove todos os números informados pelo usuário e mantém os fixos do jogo;
+Check game status: The current status of the game should be checked (not started, incomplete, and complete) and whether it contains errors or not (the game is incorrect when numbers are in conflicting positions). All game statuses can contain errors or not, except for the "not started" status, which is always error-free;
 
-        7. finalizar o jogo: Se o jogo estiver com todos os espaços preenchidos de forma válida o jogo é encerrado, senão informar ao usuário que ele deve preencher todos os espaços com seus respectivos números;
+Clear game: Removes all numbers entered by the user and keeps the fixed numbers of the game;
 
-  
+Finish game: If the game has all spaces filled in a valid way, the game ends. Otherwise, inform the user that they must fill all spaces with their respective numbers;
