@@ -1,10 +1,11 @@
 This project aims to fulfill a challenge proposed in a DIO course, according to the statement below. I tried to apply a significantly different logic than what was demonstrated.This was for practice purposes and to intentionally complexify the solution, showcasing different strategies and algorithms and giving opportunity to explain the trade-off between memory consumption and processing.
 
-Sudoku Game
-https://en.wikipedia.org/wiki/Sudoku
+# Sudoku Game
+    A 9x9 Standart Sudoku Game implementation in Java
+    https://en.wikipedia.org/wiki/Sudoku
 
-Requirements
-You must have an interactive menu where we can choose from the following options:
+## Requirements
+    You must have an interactive menu where we can choose from the following options:
 
     1 - Start a new game: The initial game board should be displayed on the screen, with spaces only filled by the initial numbers (use the main method's arguments to provide the initial numbers and their respective positions);
 
