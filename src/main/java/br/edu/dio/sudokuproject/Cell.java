@@ -12,24 +12,8 @@ class Cell {
     private Boolean isFilled;
     @Getter
 	private final Coordinate coordinate;
-
     @Getter
     private Boolean consistent;
-
-    public void setRowConsistent(Boolean rowConsistent) {
-        this.rowConsistent = rowConsistent;
-        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
-    }
-
-    public void setColumnConsistent(Boolean columnConsistent) {
-        this.columnConsistent = columnConsistent;
-        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
-    }
-
-    public void setSubGridConsistent(Boolean subGridConsistent) {
-        this.subGridConsistent = subGridConsistent;
-        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
-    }
 
     private Boolean rowConsistent;
     private Boolean columnConsistent;
@@ -66,9 +50,26 @@ class Cell {
 	public void removeValue() throws RuntimeException{
 		this.value = 0;
 		this.isFilled = false;
+        this.setRowConsistent(true);
+        this.setColumnConsistent(true);
+        this.setSubGridConsistent(true);
     }
 
+    public void setRowConsistent(Boolean rowConsistent) {
+        this.rowConsistent = rowConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
 
+    public void setColumnConsistent(Boolean columnConsistent) {
+        this.columnConsistent = columnConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
+
+    public void setSubGridConsistent(Boolean subGridConsistent) {
+        this.subGridConsistent = subGridConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
+    
     @Override
     public String toString() {
         return "|  " + ((value != 0) ? value : " ") + "  |";

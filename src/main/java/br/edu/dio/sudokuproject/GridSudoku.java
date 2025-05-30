@@ -88,7 +88,7 @@ public class GridSudoku {
         Cell cell = gridCellsMap.get(coord);
         cell.setValue(value);
         filledCellCount++;
-        validateSudokuConsistency(row, col, value);
+        validateSudokuConsistency(row, col);
         // Logic to update isGameCompletelyFilled
         boolean isGameCompletelyFilled = (filledCellCount == (GRID_SIZE * GRID_SIZE));
         if(isGameCompletelyFilled)
@@ -103,45 +103,57 @@ public class GridSudoku {
             throw new RuntimeException("Célula originalmente preenchida não pode ser apagada");
         }
 
-        validateSudokuConsistency(row, col, null);
+        validateSudokuConsistency(row, col);
         cell.removeValue();
         this.filledCellCount--;
         this.statusJogo = EnumGameStatus.INCOMPLETE;
     }
 
-    private void validateSudokuConsistency(Integer rowIndex, Integer columnIndex, Integer value) {
+    private void validateSudokuConsistency(Integer rowIndex, Integer columnIndex) {
 
         Coordinate changedCoordinate = new Coordinate(rowIndex, columnIndex);
         Cell lastChangedCell = gridCellsMap.get(changedCoordinate);
 
-        Boolean consistentRow = checkRowConsistency(lastChangedCell, value);
-        Boolean consistentColumn = checkColumnConsistency(lastChangedCell, value);
-        Boolean consistentSubGrid = checkSubGridConsistency(lastChangedCell, value);
+        Boolean consistentRow = checkRowConsistency(lastChangedCell);
+        Boolean consistentColumn = checkColumnConsistency(lastChangedCell);
+        Boolean consistentSubGrid = checkSubGridConsistency(lastChangedCell);
         this.isGameConsistent =  (consistentRow && consistentColumn && consistentSubGrid);
     }
 
-    private Boolean checkRowConsistency(Cell lastChangedCell, Integer valueInserted) {
+    private Boolean checkRowConsistency(Cell lastChangedCell) {
         Boolean rowConsistent = true;
         Integer rowIndex = lastChangedCell.getCoordinate().getRow();
         Integer columnIndex = lastChangedCell.getCoordinate().getCol();
 
         List<Cell> row = this.gridCellsListForRowAndColumnChecking.get(rowIndex);
+        List<Cell> repeatedCells = new ArrayList<>();
+        repeatedCells.add(lastChangedCell);
 
         for (int cIndex = 0; cIndex < GRID_SIZE; cIndex++) {
-            Cell existingCell = row.get(columnIndex);
-
+            Cell existingCell = row.get(cIndex);
             boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
             if(repeatedValue){
-                rowConsistent = valueInserted != null;
-                existingCell.setRowConsistent(rowConsistent);
-                lastChangedCell.setRowConsistent(rowConsistent);
+                repeatedCells.add(existingCell);
             }
         }
+        if(repeatedCells.size() < 3){
+            //this means the changed value had one or less dupllicates in the same row
+            //therefore both cells will be consistent after the change
+            repeatedCells.forEach(cell -> cell.setRowConsistent(true));
+        }
+        else{
+            // this means there was more than 1 previous value identical to the changed cell value,
+            // so changing this value won't resolve the other conflicts in this row
+            rowConsistent = false;
+        }
+
         return rowConsistent;
     }
 
-    private Boolean checkColumnConsistency(Cell lastChangedCell, Integer valueInserted) {
+    private Boolean checkColumnConsistency(Cell lastChangedCell) {
         Boolean columnConsistent = true;
+        List<Cell> repeatedCells = new ArrayList<>();
+        repeatedCells.add(lastChangedCell);
 
         for (int rIndex = 0; rIndex < GRID_SIZE; rIndex++) {
             Coordinate currentCoordinate = new Coordinate(rIndex, lastChangedCell.getCoordinate().getCol());
@@ -149,25 +161,46 @@ public class GridSudoku {
 
             boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
             if(repeatedValue){
-                columnConsistent = valueInserted != null;
-                existingCell.setColumnConsistent(columnConsistent);
-                lastChangedCell.setColumnConsistent(columnConsistent);
+                repeatedCells.add(existingCell);
             }
+        }
+
+        if(repeatedCells.size() < 3){
+            //this means the changed value had one or less dupllicates in the same column
+            //therefore both cells will be consistent after the change
+            repeatedCells.forEach(cell -> cell.setColumnConsistent(true));
+        }
+        else{
+            // this means there was more than 1 previous value identical to the changed cell value,
+            // so changing this value won't resolve the other conflicts in this column
+            columnConsistent = false;
         }
         return columnConsistent;
     }
 
-    private Boolean checkSubGridConsistency(Cell lastChangedCell, Integer valueInserted) {
+    private Boolean checkSubGridConsistency(Cell lastChangedCell) {
         Boolean subGridConsistent = true;
         Coordinate coordinateChanged = lastChangedCell.getCoordinate();
         SudokuSubGrid subGrid = subGridMap.get(coordinateChanged);
+        List<Cell> repeatedCells = new ArrayList<>();
+        repeatedCells.add(lastChangedCell);
+
         for (Cell existingCell : subGrid.getCells()) {
             boolean repeatedValue = existingCell.getValue() == lastChangedCell.getValue();
-            if (repeatedValue)
-                subGridConsistent = valueInserted != null;
-                existingCell.setSubGridConsistent(subGridConsistent);
-                lastChangedCell.setSubGridConsistent(subGridConsistent);
-                subGrid.setConsistent(subGridConsistent);
+            if (repeatedValue){
+                repeatedCells.add(existingCell);
+            }
+        }
+        if(repeatedCells.size() < 3){
+            //this means the changed value had one or less dupllicates in the same column
+            //therefore both cells will be consistent after the change
+            repeatedCells.forEach(cell -> cell.setColumnConsistent(true));
+        }
+        else{
+            // this means there was more than 1 previous value identical to the changed cell value,
+            // so changing this value won't resolve the other conflicts in this column
+            subGridConsistent = false;
+            subGrid.setConsistent(subGridConsistent);
         }
         return subGridConsistent;
     }
