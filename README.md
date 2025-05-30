@@ -1,4 +1,4 @@
-This project aims to fulfill a challenge proposed in a DIO course, according to the statement below. I tried to apply a significantly different logic than what was demonstrated in class for practice purposes and to intentionally complexify the solution, showcasing different strategies and algorithms regarding the trade-off between memory consumption and processing.
+This project aims to fulfill a challenge proposed in a DIO course, according to the statement below. I tried to apply a significantly different logic than what was demonstrated.This was for practice purposes and to intentionally complexify the solution, showcasing different strategies and algorithms and giving opportunity to explain the trade-off between memory consumption and processing.
 
 Sudoku Game
 https://en.wikipedia.org/wiki/Sudoku
