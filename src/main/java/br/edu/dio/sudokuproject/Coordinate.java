@@ -36,11 +36,17 @@ class Coordinate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinate that = (Coordinate) o;
-        return getRow() == that.getRow() && getCol() == that.getCol();
+        boolean b = getRow() == that.getRow() && getCol() == that.getCol();
+        return b;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, col, associatedCell);
+        return Objects.hash(row, col);
+    }
+
+
+    public String toString(){
+        return String.format("(%d, %d)", row, col);
     }
 }
