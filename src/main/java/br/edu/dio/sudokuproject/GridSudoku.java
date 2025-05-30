@@ -225,4 +225,17 @@ public class GridSudoku {
 
     }
 
+
+    public void showGame(){
+        System.out.println(" _____  _____  _____  _____  _____  _____  _____  _____  _____ ");
+        for(int i = 1 ; i < 10 ; i++){
+            System.out.println("|     ||     ||     ||     ||     ||     ||     ||     ||     |");
+            List<Cell> row = this.gridCellsListForRowAndColumnChecking.get(i);
+            StringBuilder lineBuilder = new StringBuilder();
+            row.forEach(cell -> lineBuilder.append(cell.toString()));
+            System.out.println(lineBuilder);
+            System.out.println("|_____||_____||_____||_____||_____||_____||_____||_____||_____|");
+        }
+    }
+
 }
