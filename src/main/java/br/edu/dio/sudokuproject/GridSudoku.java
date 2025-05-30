@@ -37,7 +37,7 @@ public class GridSudoku {
      * Constructor for the GridSudoku class.
      * Initializes the maps and the game state properties.
      */
-    public GridSudoku() {
+    public GridSudoku(List<Cell> initialCells) {
         this.subGridMap = new HashMap<>();
         this.gridCellsMap = new HashMap<>();
         this.filledCellCount = 0; // Starts with 0 filled cells
@@ -73,6 +73,12 @@ public class GridSudoku {
             }
         }
 
+        initialCells.forEach( inputCell -> {
+            Coordinate coord = inputCell.getCoordinate();
+            Cell existingCell = gridCellsMap.get(coord);
+            existingCell.setValue(inputCell.getValue());
+        });
+
         this.statusJogo = EnumGameStatus.NOT_INITIATED;
     }
 
@@ -88,10 +94,11 @@ public class GridSudoku {
         Cell cell = gridCellsMap.get(coord);
         cell.setValue(value);
         filledCellCount++;
+        this.statusJogo = EnumGameStatus.INCOMPLETE;
         validateSudokuConsistency(row, col);
         // Logic to update isGameCompletelyFilled
         boolean isGameCompletelyFilled = (filledCellCount == (GRID_SIZE * GRID_SIZE));
-        if(isGameCompletelyFilled)
+        if(isGameCompletelyFilled && this.getGameConsistent())
             statusJogo = EnumGameStatus.COMPLETE;
     }
 
