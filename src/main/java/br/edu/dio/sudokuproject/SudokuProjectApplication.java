@@ -9,6 +9,9 @@ public class SudokuProjectApplication {
 
     private final static Scanner scanner = new Scanner(System.in);
 
+    private final static int TAMANHO_INPUT_REMOCAO_VALOR = 2;
+    private final static int TAMANHO_INPUT_INSERCAO_VALOR = 3;
+
     public static void main(String[] args) {
 
         System.out.println("*** Sudoku Game ***");
@@ -36,7 +39,12 @@ public class SudokuProjectApplication {
         GridSudoku currentGame = new GridSudoku(inputCells);
 
         int option = -1;
+
+        System.out.println("Press Enter to continue...");
+
         while (true) {
+            String lineBreak = scanner.nextLine();
+
             System.out.println("Select 1 of the actions below and type the respective number");
             System.out.println("1 - Start Game");
             System.out.println("2 - Input Number");
@@ -47,15 +55,30 @@ public class SudokuProjectApplication {
             System.out.println("7 - Finish Game");
             System.out.println("8 - Exit");
 
-            option = scanner.nextInt();
+
+            String input = scanner.nextLine();
+
+            try {
+                // Attempt to convert the input to an integer
+                option = Integer.parseInt(input.trim()); // .trim() removes leading/trailing spaces
+
+            } catch (NumberFormatException e) {
+                option = -1;
+            }
 
             switch (option) {
                 case 1 -> {
                     Boolean result = currentGame.startGame();
-                    System.out.println((result) ? "The game has been started" : "The was already started");
-
+                    System.out.println((result) ? "The game has been started" : "The game was already started");
+                    System.out.println("Press Enter to continue...");
                 }
                 case 2 -> {
+
+                    if (currentGame.getGameStatus() == EnumGameStatus.NOT_INITIATED) {
+                        System.out.println("Please start the game first using Option (1)");
+                        System.out.println("Press Enter to continue...");
+                        continue;
+                    }
 
                     System.out.println("Enter value and coordinates (range from 1 to 9) in the following format:");
                     System.out.println("new value, row number,column number");
@@ -63,6 +86,7 @@ public class SudokuProjectApplication {
                     boolean invalidInput = !isCoordinatesAndValueInputValid(coordinatesInput);
                     if(invalidInput){
                         System.out.println("Invalid input. Returning to main Menu");
+                        System.out.println("Press Enter to continue...");
                         continue;
                     }
                     String[] coordinates = coordinatesInput.split(",");
@@ -73,40 +97,82 @@ public class SudokuProjectApplication {
 
                     try {
                         currentGame.setCellValue(rowIndex, columnIndex,value);
+                        System.out.println("Value added");
+                        System.out.println("Press Enter to continue...");
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
+                        System.out.println("Press Enter to continue...");
                         continue;
                     }
                 }
                 case 3 -> {
 
+                    if (currentGame.getGameStatus() == EnumGameStatus.NOT_INITIATED) {
+                        System.out.println("Please start the game first using Option (1)");
+                        System.out.println("Press Enter to continue...");
+                        continue;
+                    }
                     System.out.println("Insert the coordinates from which to remove value (from 1 to 9) in the following format:");
                     System.out.println("row number,column number");
                     String coordinatesInput = scanner.nextLine();
+
                     boolean invalidInput = !isCoordinatesInputValid(coordinatesInput);
                     if(invalidInput){
                         System.out.println("Invalid input. Returning to main Menu");
+                        System.out.println("Press Enter to continue...");
                         continue;
                     }
                     String[] coordinates = coordinatesInput.split(",");
 
-                    Integer rowIndex = Integer.parseInt(coordinates[0]);
-                    Integer columnIndex = Integer.parseInt(coordinates[1]);
+                    Integer rowIndex = Integer.parseInt(coordinates[0])-1;
+                    Integer columnIndex = Integer.parseInt(coordinates[1])-1;
                     try {
                         currentGame.removeCellValue(rowIndex, columnIndex);
+                        System.out.println("Value removed");
+                        System.out.println("Press Enter to continue...");
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
+                        System.out.println("Press Enter to continue...");
+
                         continue;
                     }
                 }
-                case 4 -> currentGame.showGame();
-                case 5 -> {
-                    System.out.println("Game Status:" + currentGame.getGameStatus());
+                case 4 -> {
+                    currentGame.showGame();
+                    System.out.println("Press Enter to continue...");
                 }
-                case 6 -> currentGame.clearGame();
-                case 7 -> currentGame.finishGame();
+
+
+                case 5 -> {
+                    String consistencyString = " and " + ((currentGame.getGameConsistent()) ? "Consistent" : "Inconsistent");
+                    System.out.println("Game Status:" + currentGame.getGameStatus() + consistencyString );
+                    System.out.println("Press Enter to continue...");
+                }
+                case 6 -> {
+                    if (currentGame.getGameStatus() == EnumGameStatus.NOT_INITIATED) {
+                        System.out.println("The game already is in its initial state");
+                        System.out.println("Press Enter to continue...");
+                        continue;
+                    }
+                    currentGame.clearGame();
+                    System.out.println("The game has been cleared");
+                    System.out.println("Press Enter to continue...");
+                }
+                case 7 -> {
+                    boolean gameFinished = currentGame.finishGame();
+                    if(gameFinished){
+                        System.out.println("The game has been finished");
+                        break;
+                    }
+                    System.out.println("You must fill all spaces with their respective numbers");
+                    System.out.println("Press Enter to continue...");
+                    continue;
+                }
                 case 8 -> System.exit(0);
-                default -> System.out.println("Invalid option, select one of the menu options");
+                default -> {
+                    System.out.println("Invalid option, select one of the menu options");
+                    System.out.println("Press Enter to continue...");
+                }
             }
 
         }
@@ -121,7 +187,7 @@ public class SudokuProjectApplication {
 
         String[] parts = input.trim().split(",");
 
-        if (parts.length != 2) {
+        if (parts.length != TAMANHO_INPUT_REMOCAO_VALOR) {
             return false;
         }
 
@@ -146,7 +212,7 @@ public class SudokuProjectApplication {
 
         String[] parts = input.trim().split(",");
 
-        if (parts.length != 3) {
+        if (parts.length != TAMANHO_INPUT_INSERCAO_VALOR) {
             return false;
         }
 
