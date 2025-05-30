@@ -27,6 +27,10 @@ class Cell {
         this.value = 0;
 		this.isInitiallyFilled = false;
 		this.isFilled = false;
+        this.rowConsistent =true;
+        this.columnConsistent = true;
+        this.subGridConsistent = true;
+        this.consistent = true;
 		this.coordinate = coordinate;
 		this.coordinate.setCell(this);
     }
@@ -36,13 +40,21 @@ class Cell {
 		this.value = value;
 		this.isFilled = true;
 		this.isInitiallyFilled = true;
+        this.consistent =  true;
+        this.rowConsistent =  true;
+        this.columnConsistent =  true;
+        this.subGridConsistent =  true;
+
     }
 
 
     public void setValue(int newValue) throws RuntimeException{
-        if ( newValue < 1 || newValue > 9) throw new RuntimeException("Valor Inválido: " + newValue);
-		if ( value != 0 ) throw new RuntimeException("Célula já preenchida");
+        if ( newValue < 1 || newValue > 9) throw new RuntimeException("Invalid value: " + newValue);
+		if ( value != 0 ) throw new RuntimeException("Cell already occupied");
         this.value = newValue;
+        this.rowConsistent = true;
+        this.columnConsistent = true;
+        this.subGridConsistent = true;
         this.isFilled = true;
     }
 	
