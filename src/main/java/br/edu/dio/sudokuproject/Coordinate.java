@@ -36,7 +36,7 @@ class Coordinate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinate that = (Coordinate) o;
-        return this.getRow() == that.getRow() && this.getCol() == that.getCol();
+        return getRow() == that.getRow() && getCol() == that.getCol();
     }
 
     @Override

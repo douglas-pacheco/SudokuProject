@@ -30,7 +30,7 @@ public class GridSudoku {
     private Boolean isGameConsistent;
 
     @Getter
-    private EnumGameStatus statusJogo;
+    private EnumGameStatus gameStatus;
 
 
     /**
@@ -79,7 +79,7 @@ public class GridSudoku {
             existingCell.setValue(inputCell.getValue());
         });
 
-        this.statusJogo = EnumGameStatus.NOT_INITIATED;
+        this.gameStatus = EnumGameStatus.NOT_INITIATED;
     }
 
     /**
@@ -94,26 +94,21 @@ public class GridSudoku {
         Cell cell = gridCellsMap.get(coord);
         cell.setValue(value);
         filledCellCount++;
-        this.statusJogo = EnumGameStatus.INCOMPLETE;
         validateSudokuConsistency(row, col);
-        // Logic to update isGameCompletelyFilled
-        boolean isGameCompletelyFilled = (filledCellCount == (GRID_SIZE * GRID_SIZE));
-        if(isGameCompletelyFilled && this.getGameConsistent())
-            statusJogo = EnumGameStatus.COMPLETE;
     }
 
 
-    public void removeCellValue(Integer row, Integer col) {
+    public void removeCellValue(Integer row, Integer col) throws Exception {
         Coordinate coord = new Coordinate(row, col);
         Cell cell = gridCellsMap.get(coord);
         if (cell.getIsInitiallyFilled()) {
-            throw new RuntimeException("Célula originalmente preenchida não pode ser apagada");
+            throw new Exception("Célula originalmente preenchida não pode ser apagada");
         }
 
         validateSudokuConsistency(row, col);
         cell.removeValue();
         this.filledCellCount--;
-        this.statusJogo = EnumGameStatus.INCOMPLETE;
+        this.gameStatus = EnumGameStatus.INCOMPLETE;
     }
 
     private void validateSudokuConsistency(Integer rowIndex, Integer columnIndex) {
@@ -213,7 +208,7 @@ public class GridSudoku {
     }
 
     public Boolean getGameConsistent() {
-        return statusJogo == EnumGameStatus.NOT_INITIATED || isGameConsistent;
+        return gameStatus == EnumGameStatus.NOT_INITIATED || isGameConsistent;
     }
 
     public void clearGame(){
@@ -228,7 +223,7 @@ public class GridSudoku {
                 }
             }
         }
-        this.statusJogo = EnumGameStatus.NOT_INITIATED;
+        this.gameStatus = EnumGameStatus.NOT_INITIATED;
 
     }
 
@@ -243,6 +238,26 @@ public class GridSudoku {
             System.out.println(lineBuilder);
             System.out.println("|_____||_____||_____||_____||_____||_____||_____||_____||_____|");
         }
+    }
+
+    public Boolean startGame(){
+        if(this.gameStatus != EnumGameStatus.NOT_INITIATED)
+            return false;
+        else {
+            this.gameStatus = EnumGameStatus.INCOMPLETE;
+            return true;
+        }
+
+    }
+
+    public Boolean finishGame() {
+        boolean isGameCompletelyFilled = (filledCellCount == (GRID_SIZE * GRID_SIZE));
+        if(isGameCompletelyFilled && this.getGameConsistent()){
+            gameStatus = EnumGameStatus.COMPLETE;
+            return true;
+        }
+        return false;
+
     }
 
 }
