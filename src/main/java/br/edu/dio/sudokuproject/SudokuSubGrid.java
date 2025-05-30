@@ -6,13 +6,14 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 class SudokuSubGrid {
 
 
-    @Getter
-    private List<Cell> cells;
-    @Getter
+    private final List<Cell> cells;
     private final Coordinate subGridKey; // Top-left cell coordinate of this subgrid
+
+    @Setter
     private Boolean consistent;
 
 

@@ -1,11 +1,15 @@
 package br.edu.dio.sudokuproject;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 class Coordinate {
 
 
+    @Getter
     private final Integer row;
+    @Getter
     private final Integer col;
 	private Cell associatedCell;
 
@@ -19,16 +23,8 @@ class Coordinate {
         this.col = col;
     }
 
-    public Integer getRow() {
-        return row;
-    }
 
-    public Integer getCol() {
-        return col;
-    }
-	
-	
-	public void setCell(Cell cell){
+    public void setCell(Cell cell){
 		this.associatedCell = cell;
 	}
 
@@ -40,7 +36,7 @@ class Coordinate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinate that = (Coordinate) o;
-        return this.row == that.row && this.col == that.col;
+        return this.getRow() == that.getRow() && this.getCol() == that.getCol();
     }
 
     @Override

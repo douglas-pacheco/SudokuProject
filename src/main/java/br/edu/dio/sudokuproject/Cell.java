@@ -6,9 +6,34 @@ class Cell {
 
     @Getter
     private Integer value;
+    @Getter
     private Boolean isInitiallyFilled; // Indicates if the value was part of the initial puzzle
-	private Boolean isFilled;
+    @Getter
+    private Boolean isFilled;
+    @Getter
 	private final Coordinate coordinate;
+
+    @Getter
+    private Boolean consistent;
+
+    public void setRowConsistent(Boolean rowConsistent) {
+        this.rowConsistent = rowConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
+
+    public void setColumnConsistent(Boolean columnConsistent) {
+        this.columnConsistent = columnConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
+
+    public void setSubGridConsistent(Boolean subGridConsistent) {
+        this.subGridConsistent = subGridConsistent;
+        this.consistent = this.rowConsistent && this.columnConsistent && this.subGridConsistent;
+    }
+
+    private Boolean rowConsistent;
+    private Boolean columnConsistent;
+    private Boolean subGridConsistent;
 
 
     /**
@@ -23,7 +48,7 @@ class Cell {
     }
 
 
-    public void setInitialValue(int value){
+    public void setInitialValue(Integer value){
 		this.value = value;
 		this.isFilled = true;
 		this.isInitiallyFilled = true;
@@ -31,10 +56,10 @@ class Cell {
 
 
     public void setValue(int newValue) throws RuntimeException{
-        if ( value < 1 || value > 9) throw new RuntimeException("Valor Inválido: " + value);
+        if ( newValue < 1 || newValue > 9) throw new RuntimeException("Valor Inválido: " + newValue);
 		if ( value != 0 ) throw new RuntimeException("Célula já preenchida");
-		this.value = newValue;
-		this.isFilled = true;
+        this.value = newValue;
+        this.isFilled = true;
     }
 	
 	
@@ -42,11 +67,6 @@ class Cell {
 		this.value = 0;
 		this.isFilled = false;
     }
-
-
-	public Boolean getIsInitiallyFilled() {
-		return isInitiallyFilled;
-	}
 
 
     @Override
