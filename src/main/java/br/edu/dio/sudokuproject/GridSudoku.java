@@ -123,7 +123,15 @@ public class GridSudoku {
         Boolean consistentRow = checkRowConsistency(lastChangedCell, isRemoval);
         Boolean consistentColumn = checkColumnConsistency(lastChangedCell, isRemoval);
         Boolean consistentSubGrid = checkSubGridConsistency(lastChangedCell, isRemoval);
-        this.isGameConsistent =  (consistentRow && consistentColumn && consistentSubGrid);
+
+        Boolean cellConsistent = consistentRow && consistentColumn && consistentSubGrid;
+        boolean anyOtherCellInconsistent = false;
+
+        if (cellConsistent) {
+            anyOtherCellInconsistent = gridCellsMap.values().stream().anyMatch(cell -> !cell.getConsistent());
+        }
+
+        this.isGameConsistent =  cellConsistent && !anyOtherCellInconsistent ;
     }
 
     private Boolean checkRowConsistency(Cell lastChangedCell, boolean isRemoval) {
